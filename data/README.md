@@ -16,7 +16,7 @@
 - data_rating_text.csv: data.csv에서 rating과 review text만 추출한 file
 - data_final.csv: 데이터 정제 방법을 거친 후 최종적으로 사용하는 dataset file
 - char2idx.pickle: 리뷰 기준에 대한 character 별로 숫자를 mapping한 python dictionary 객체 (pickle format)
-
+- word2idx.pickle: 리뷰 기준에 대한 word 별로 숫자를 mapping한 python dictionary 객체 (pickle format)
 
 ## 데이터 정제 방법
 - 평점 기준: 1 ~ 5 점의 정수형 데이터로 한정한다. [data에는 0 ~ 4점으로 표시되어 있다.]
@@ -25,4 +25,4 @@
 - 리뷰 기준
     - 리뷰는 미리 정한 character만 취급한다. (그 외의 문자는 사전 삭제한다.)
     - 알파벳은 모두 소문자로 취급한다.
-    - 미리 정한 character 기준 (46개): 숫자(0-9), 알파벳(a-z), 공백(ascii, unicode 모두 지원), 특정 특수문자(온점(.), 반점(,), 하이픈(-), 언더스코어(_), 느낌표(!), 물음표(?), 슬래시(/), 개행문자(\n))
+    - 미리 정한 character 기준 (44개): 숫자(0-9), 알파벳(a-z), 공백, 특정 특수문자(온점(.), 반점(,), 하이픈(-), 언더스코어(_), 느낌표(!), 물음표(?), 슬래시(/))

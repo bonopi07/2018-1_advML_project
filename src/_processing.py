@@ -1,5 +1,6 @@
 import csv
 import os
+import pickle
 import re
 
 
@@ -13,7 +14,7 @@ def walk_dir(input_path):
     return result
 
 
-# function: 주어진 csv file에 대해 특정 정규표현식을 만족하는 패턴만 추출하여 csv를 저장하는 함수
+# function: 주어진 csv file 에 대해 특정 정규표현식을 만족하는 패턴만 추출하여 csv 를 저장하는 함수
 def parse_qualified_data(in_file_name, out_file_name,
                          in_encoding_type='', out_encoding_type='', rule=''):
     if in_encoding_type == '':
@@ -21,7 +22,15 @@ def parse_qualified_data(in_file_name, out_file_name,
     if out_encoding_type == '':
         out_encoding_type = 'utf-8'
     if rule == '':
-        rule = '[a-zA-Z0-9\s.,_/?!\-]+'  # 알파벳, 숫자, 공백, 특정 특수문자
+        rule = '[a-zA-Z0-9\s.,_/?!\-]+'
+    '''
+        what I used as regular expression rule is..
+        - 'a-z': lowercase alphabet
+        - 'A-Z': uppercase alphabet
+        - '0-9': digit
+        - '\s': blank type including backspace, tab, and so on
+        - '. , _ ? ! -': specific special character
+    '''
 
     whole_info = list()
 
@@ -36,6 +45,10 @@ def parse_qualified_data(in_file_name, out_file_name,
 
             regex = re.compile(rule)
             mod_sentence = ''.join(regex.findall(text)).lower()
+            if '\xa0' in mod_sentence:  # space in unicode
+                mod_sentence = mod_sentence.replace('\xa0', ' ')
+            if '\x85' in mod_sentence:  # newline in unicode
+                mod_sentence = mod_sentence.replace('\x85', ' ')
 
             whole_info.append([rating, mod_sentence])
 
@@ -47,8 +60,8 @@ def parse_qualified_data(in_file_name, out_file_name,
     pass
 
 
-# function:
-def create_char_2_idx_dic(in_file_name, pickle_file_name='char2idx.pickle'):
+# function: input data 의 특정 unit 에 대해 idx dictionary pickle file 을 생성하는 함수
+def create_unit_2_idx_dic(in_file_name, pickle_file_name):
     # csv file 에서 sentence 에 해당하는 data 수집
     sentences = list()
     with open(in_file_name, 'r', encoding='utf-8') as f:
@@ -56,24 +69,23 @@ def create_char_2_idx_dic(in_file_name, pickle_file_name='char2idx.pickle'):
         for line in rdr:
             sentences.append(line[1])
 
-    # char set 생성
-    char_set = set()
+    # unit set 생성
+    unit_set = set()
     for sentence in sentences:
-        char_set.update([char for char in sentence])
-    print('result char set:', char_set)
-    print('result char set size:', len(char_set))
+        # unit_set.update([char for char in sentence])  # if char2idx
+        unit_set.update(sentence.split(' '))  # if word2idx
 
-    # char dict 생성
-    char_dic = {w: i for i, w in enumerate(char_set)}
-    print('result char dict:', char_dic)
-    print('result char dict size:', len(char_dic))
+    print('result unit set:', sorted([element for element in unit_set]))
+    print('result unit set size:', len(unit_set))
 
-    # unicode 에서의 공백을 ascii code 일 때와 병합
-    char_dic['\xa0'] = char_dic[' ']  # \x85는 unicode로 newline
+    # unit dict 생성
+    unit_dic = {w: i for i, w in enumerate(unit_set)}
+    print('result unit dict:', unit_dic)
+    print('result unit dict size:', len(unit_dic))
 
     # pickle format 으로 저장
-    # with open(pickle_file_name, 'wb') as f:
-    #     pickle.dump(char_dic, f, protocol=pickle.HIGHEST_PROTOCOL)
+    with open(pickle_file_name, 'wb') as f:
+        pickle.dump(unit_dic, f, protocol=pickle.HIGHEST_PROTOCOL)
     pass
 
 
@@ -88,9 +100,9 @@ if __name__ == '__main__':
                          rule='[a-zA-Z0-9\s.,_/?!\-]+')
 
     '''
-        create char2idx dictionary
+        create unit2idx dictionary
     '''
-    create_char_2_idx_dic(in_file_name='../data/data_final.csv',
-                          pickle_file_name='../data/char2idx.pickle')
+    create_unit_2_idx_dic(in_file_name='../data/data_final.csv',
+                          pickle_file_name='../data/word2idx.pickle')
 
     pass

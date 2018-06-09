@@ -18,9 +18,11 @@
 - 자연어 처리 기반의 many-to-one 방식 RNN을 학습한다.
   - RNN 실습을 통해 동적 입력 크기에 대한 처리 방법을 익힌다.
   - char-level, word-level 의 다양한 자연어 처리 방법을 공부한다.
-  - deep, wide한 방법(e.g.stacked RNN)과 다양한 딥러닝 테크닉(e.g.dropout)을 적용해본다.
+  - deep, wide한 방법(e.g.stacked RNN)과 다양한 딥러닝 테크닉(e.g.dropout, word embedding)을 적용해본다.
   - RNN model의 뒤에 softmax나 FC layer를 붙혀본다.
 
 
 ## Version Update Log
 - 2018.05.07: create repository. update README
+- 2018.06.03: version 1.0 (LSTM 3 Layer, char-level one-hot encoding vector, no dropout, loss: cross entropy, opt: Adam)
+- 2018.06.10: version 1.1 (LSTM 3 Layer, word-level embedding-lookup vector, no dropout, loss: cross entropy, opt: Adam)
