@@ -64,7 +64,7 @@ class KISNet:
             x_seq_length = tf.placeholder(tf.int32, shape=[None], name='x_seq_length')
 
             y = tf.placeholder(tf.int32, shape=[None], name='y')
-            y_one_hot = tf.one_hot(y, self.output_size, name='y_one_hot')
+            y_one_hot = tf.one_hot(y, self.output_size, name='y_one_hot', dtype=tf.int32)
 
             prob = tf.placeholder(tf.float32, name='prob')
 
@@ -72,12 +72,6 @@ class KISNet:
 
             # loss function 1
             cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits_v2(logits=y_, labels=y_one_hot))
-
-            # loss function 2
-            # weight = tf.ones([self.train_batch_size, max_seq_length])
-            # sequence_loss = seq2seq.sequence_loss(logits=y_, targets=y,
-            #                                       weights=weight)
-            # mean_loss = tf.reduce_mean(sequence_loss)
 
             # optimizer: Adaptive momentum optimizer
             optimizer = tf.train.AdamOptimizer(self.learning_rate).minimize(cost)
@@ -93,9 +87,12 @@ class KISNet:
         keep_prob = float(1 - self.dropout_prob)
         model_saver = tf.train.Saver()
         init = tf.global_variables_initializer()
+
+        # configure tensorflow config option
         tf_config = tf.ConfigProto(allow_soft_placement=True)
         tf_config.gpu_options.allow_growth = True
 
+        # session start
         with tf.Session(config=tf_config) as sess:
             sess.run(init)
 
@@ -122,6 +119,7 @@ class KISNet:
                 iteration += 1
             train_time = time.time() - train_time
             model_saver.save(sess, model_path)
+
         print('training time : {}'.format(train_time))
         print('------training finish------')
         pass
@@ -145,8 +143,12 @@ class KISNet:
         # evaluating session start
         model_saver = tf.train.Saver()
         init = tf.global_variables_initializer()
-        tf_config = tf.ConfigProto(allow_soft_placement=True)
 
+        # configure tensorflow config option
+        tf_config = tf.ConfigProto(allow_soft_placement=True)
+        tf_config.gpu_options.allow_growth = True
+
+        # session start
         with tf.Session(config=tf_config) as sess:
             sess.run(init)
 
@@ -179,6 +181,7 @@ class KISNet:
                 pred_labels.append(pred_label)
                 actual_labels.append(actual_label)
             eval_time = time.time() - eval_time
+
         total_accuracy = float(100. * (answer_cnt / number_of_data))
         print('test time : {}'.format(eval_time))
         print('accuracy : {}'.format(total_accuracy))

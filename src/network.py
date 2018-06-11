@@ -18,8 +18,11 @@ def inference_LSTM(x, x_seq_length, max_seq_length, data_dim, hidden_size, num_r
     outputs, state = tf.nn.dynamic_rnn(cells, x_embedding_vector,
                                        sequence_length=x_seq_length,
                                        dtype=tf.float32)  # state: usually use final values
+    # outputs : (?, ?, 300)
+    # state   : (3, ?, 300) ?
 
     y_reshape = tf.reshape(outputs, [-1, max_seq_length * hidden_size])  # 3278
+    # y_reshape = tf.reshape(state, [-1, 6*hidden_size])  # why 6?
 
     y_fc = layers.fully_connected(inputs=y_reshape,
                                   num_outputs=output_size,

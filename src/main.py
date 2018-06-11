@@ -3,6 +3,7 @@ import data
 import model
 import numpy as np
 from sklearn.model_selection import KFold
+import tensorflow as tf
 
 # config parameters
 config = configparser.ConfigParser(interpolation=configparser.ExtendedInterpolation())
@@ -42,6 +43,7 @@ def run():
     accuracy_list = list()
     data_idx = np.arange(len(total_data))
     cv = KFold(n_splits=k_fold_value, shuffle=True, random_state=0)
+
     for exp_idx, (train_idx, eval_idx) in enumerate(cv.split(data_idx)):
         '''
             separate data
